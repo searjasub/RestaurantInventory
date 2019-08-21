@@ -61,8 +61,10 @@ public class MainStageController {
 
     }
 
-    public void onMenuItemExit() {
-        primaryStage.close();
+    private void showAlertInvalidInput(){
+        Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid ID", ButtonType.OK);
+        alert.setTitle("Invalid Input");
+        alert.show();
     }
 
     public void login() throws IOException {
@@ -71,17 +73,12 @@ public class MainStageController {
 
         //Simplified if else statement
         boolean isManager = employeeIdentifier == 3;
-        Employee employee = null;
+        Employee employee;
         if (isManager) {
-            try {
-                employee = adminMap.get(Integer.parseInt(usernameTextField.getText()));
-            } catch (IllegalArgumentException ex) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid ID", ButtonType.OK);
-                alert.setTitle("Invalid Input");
-                alert.show();
-            }
+            //TODO ERROR CHECKING
+            employee = adminMap.get(Integer.parseInt(usernameTextField.getText()));
+
             currentSession.setLoggedIn(employee);
-            //TODO finish
             if (employee != null) {
                 if (passwordTextField.getText().equals(employee.getPassword())) {
 

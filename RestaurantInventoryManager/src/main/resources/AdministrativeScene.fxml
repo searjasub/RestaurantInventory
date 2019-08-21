@@ -11,22 +11,17 @@
     </center>
     <top>
         <MenuBar fx:id="menuBar">
-            <menus>
-                <Menu text="File">
-                    <items>
-                        <MenuItem onAction="#onMenuEndSession" text="Switch User"/>
-                        <MenuItem onAction="#onMenuItemExit" text="Exit" />
-                    </items>
-                </Menu>
-            </menus>
+            <Menu text="File">
+                <MenuItem onAction="#onMenuEndSession" text="Switch User"/>
+            </Menu>
         </MenuBar>
     </top>
     <bottom>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <items>
-                <RadioButton onAction="#allShow" fx:id="radioAll" mnemonicParsing="false" prefHeight="21.0" prefWidth="73.0" text="All"/>
-                <RadioButton fx:id="radioClockedIn" mnemonicParsing="false" prefHeight="21.0" prefWidth="112.0" text="Clocked In"/>
-            </items>
+            <RadioButton onAction="#allShow" fx:id="radioAll" mnemonicParsing="false" prefHeight="21.0" prefWidth="73.0"
+                         text="All"/>
+            <RadioButton fx:id="radioClockedIn" mnemonicParsing="false" prefHeight="21.0" prefWidth="112.0"
+                         text="Clocked In"/>
         </ToolBar>
     </bottom>
 </BorderPane>
