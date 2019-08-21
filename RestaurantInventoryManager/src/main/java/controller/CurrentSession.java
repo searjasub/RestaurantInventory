@@ -18,9 +18,9 @@ public class CurrentSession {
     }
 
     void setLoggedIn(Employee loggedIn) {
-        if (loggedIn == null) {
-            throw new IllegalArgumentException("There is no employee");
-        }
+//        if (loggedIn == null) {
+//            throw new IllegalArgumentException("There is no employee");
+//        }
         this.loggedIn = loggedIn;
     }
 

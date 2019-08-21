@@ -34,7 +34,7 @@
    <center>
       <VBox prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="usernameTextField" prefWidth="541.0" promptText="Username">
+            <TextField fx:id="usernameTextField" prefWidth="541.0" promptText="User ID">
                <VBox.margin>
                   <Insets bottom="10.0" left="30.0" right="30.0" />
                </VBox.margin>

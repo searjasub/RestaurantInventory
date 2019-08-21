@@ -5,9 +5,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.Employee;
@@ -34,7 +32,7 @@ public class MainStageController {
     private MongoClient mongoC = new MongoClient(new ServerAddress("Localhost", 27017));
     private DB db = mongoC.getDB("Restaurants");
     private DBCollection dbCollection = db.getCollection("Employees");
-    private HashMap<Integer, Employee> adminMap = new HashMap<>();
+    private HashMap<Integer, Employee> adminMap;
     private MongoCollection<Document> adminCollection = database.getCollection("Administrators");
     private DBCollection adminDbCollection = db.getCollection("Administrators");
     private CurrentSession currentSession = new CurrentSession();
@@ -73,18 +71,22 @@ public class MainStageController {
 
         //Simplified if else statement
         boolean isManager = employeeIdentifier == 3;
-
+        Employee employee = null;
         if (isManager) {
-            Employee e = adminMap.get(Integer.parseInt(usernameTextField.getText()));
-            currentSession.setLoggedIn(e);
+            try {
+                employee = adminMap.get(Integer.parseInt(usernameTextField.getText()));
+            } catch (IllegalArgumentException ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid ID", ButtonType.OK);
+                alert.setTitle("Invalid Input");
+                alert.show();
+            }
+            currentSession.setLoggedIn(employee);
             //TODO finish
-            if (e.equals(null)) {
-                //Dialog telling user username is not valid
-            } else if (!e.equals(null)) {
-                if (passwordTextField.getText().equals(e.getPassword())) {
+            if (employee != null) {
+                if (passwordTextField.getText().equals(employee.getPassword())) {
 
                     currentSession.setAdmin(true);
-                    currentSession.setLoggedIn(e);
+                    currentSession.setLoggedIn(employee);
 
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("../AdministrativeScene.fxml"));
                     BorderPane root = loader.load();
@@ -101,10 +103,7 @@ public class MainStageController {
             }
         } else {
             Employee e = employeeCollection.get(Integer.parseInt(usernameTextField.getText()));
-            if (e.equals(null)) {
-                //Dialog telling user username is incorrect
-            }
-            if (!e.equals(null)) {
+            if (e != null) {
                 if (passwordTextField.getText().equals(e.getPassword())) {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("../POSScene.fxml"));
                     BorderPane root = loader.load();
@@ -163,7 +162,7 @@ public class MainStageController {
         }
 
         Employee employee;
-        for (int i = 0; i < adminCollection.countDocuments(); i++) {
+        for (int i = 0; i < dbObjects.size(); i++) {
             employee = new Employee();
             employee.setName(dbObjects.get(i).get("name").toString());
             employee.setPassword(dbObjects.get(i).get("password").toString());

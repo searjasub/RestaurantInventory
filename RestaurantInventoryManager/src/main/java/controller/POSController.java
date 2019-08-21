@@ -65,14 +65,6 @@ public class POSController {
         POSController.salesTax = salesTax;
     }
 
-//    void setPrimaryStage(Stage primaryStage, Scene tmp, MainStageController mainStageController) {
-//        this.primaryStage = primaryStage;
-//        this.scene = tmp;
-//        this.mainController = mainStageController;
-//
-//        primaryStage.setTitle("Inventory Tracker Manager - POS");
-//    }
-
 
     void setPrimaryStage(Stage primaryStage, Scene posScene, MainStageController mainStageController, HashMap<Integer, Employee> employeesCollection, CurrentSession currentSession) {
         this.primaryStage = primaryStage;
@@ -88,6 +80,8 @@ public class POSController {
             paginationPOS.setPageCount(1);
         }
         paginationPOS.setPageFactory(this::createPage);
+
+        System.out.println(currentSession.isAdmin());
 
         if (currentSession.isAdmin()) {
             Menu viewMenu = new Menu("View");
@@ -106,6 +100,7 @@ public class POSController {
             toggleGroup.getToggles().add(inventory);
             toggleGroup.getToggles().add(pos);
             toggleGroup.getToggles().add(finance);
+            admin.setSelected(true);
 
 
             Menu mealMenu = new Menu("Menu");
@@ -117,6 +112,8 @@ public class POSController {
             mealMenu.getItems().add(updateMeal);
 
             menuBar.getMenus().add(mealMenu);
+            menuBar.getMenus().add(viewMenu);
+
 
             addMeal.setOnAction(event -> {
                 Dialog<Meal> dialog = new Dialog<>();
@@ -212,10 +209,8 @@ public class POSController {
 
             });
 
-
             pos.setSelected(true);
 //            mealTable.setItems(fillMealCollection());
-            this.menuBar.getMenus().add(viewMenu);
 
             admin.setOnAction(event -> {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("../AdministrativeScene.fxml"));
@@ -251,7 +246,6 @@ public class POSController {
                 primaryStage.setMaxHeight(600);
                 primaryStage.setScene(scene);
             });
-
 
         }
 
@@ -399,10 +393,6 @@ public class POSController {
         } catch (NumberFormatException | IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void onMenuItemExit(ActionEvent actionEvent) {
-        primaryStage.close();
     }
 
     private void addMeal(String mealName, int mealID, double totalCalorieCount, String veganFriendly, double cost) {
