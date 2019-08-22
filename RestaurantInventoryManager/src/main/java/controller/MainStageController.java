@@ -32,10 +32,10 @@ public class MainStageController {
     private MongoClient mongoC = new MongoClient(new ServerAddress("Localhost", 27017));
     private DB db = mongoC.getDB("Restaurants");
     private DBCollection dbCollection = db.getCollection("Employees");
-    private HashMap<Integer, Employee> adminMap;
     private MongoCollection<Document> adminCollection = database.getCollection("Administrators");
     private DBCollection adminDbCollection = db.getCollection("Administrators");
     private CurrentSession currentSession = new CurrentSession();
+    private HashMap<Integer, Employee> adminMap;
 
     public MainStageController() {
 
@@ -67,30 +67,34 @@ public class MainStageController {
         alert.show();
     }
 
+    public void  login2() {
+
+    }
+
     public void login() throws IOException {
-        Scene tmp = this.scene;
-        int employeeIdentifier = Integer.parseInt(usernameTextField.getText(0, 1));
 
         //Simplified if else statement
-        boolean isManager = employeeIdentifier == 3;
         Employee employee;
-        if (isManager) {
+        if (usernameTextField.getText().startsWith("3")) {
             //TODO ERROR CHECKING
             employee = adminMap.get(Integer.parseInt(usernameTextField.getText()));
 
-            currentSession.setLoggedIn(employee);
+//            currentSession.setLoggedIn(employee);
+            System.out.println(employee);
             if (employee != null) {
                 if (passwordTextField.getText().equals(employee.getPassword())) {
 
-                    currentSession.setAdmin(true);
-                    currentSession.setLoggedIn(employee);
+//                    currentSession.setAdmin(true);
+//                    currentSession.setLoggedIn(employee);
 
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("../AdministrativeScene.fxml"));
+                    //TODO ISSUE FOUND
                     BorderPane root = loader.load();
+
                     AdministrativeController adminController = loader.getController();
                     Scene administrativeScene = new Scene(root, 600, 600);
 
-                    adminController.setPrimaryStage(primaryStage, tmp, this, employeeCollection, currentSession);
+                    adminController.setPrimaryStage(primaryStage, scene, this, employeeCollection, currentSession);
                     primaryStage.setMaxWidth(600);
                     primaryStage.setMaxHeight(600);
                     primaryStage.setScene(administrativeScene);
@@ -107,7 +111,7 @@ public class MainStageController {
                     POSController posController = loader.getController();
                     Scene posScene = new Scene(root, 600, 600);
 
-                    posController.setPrimaryStage(primaryStage, tmp, this, employeeCollection, currentSession);
+                    posController.setPrimaryStage(primaryStage, scene, this, employeeCollection, currentSession);
                     primaryStage.setMaxWidth(600);
                     primaryStage.setMaxHeight(600);
                     primaryStage.setScene(posScene);
@@ -151,7 +155,7 @@ public class MainStageController {
 
         int id = 30000;
         for (int i = 0; i < adminCollection.countDocuments(); i++) {
-            DBObject query1 = BasicDBObjectBuilder.start().add("employeeID", "" + (id + i)).get();
+            DBObject query1 = BasicDBObjectBuilder.start().add("employeeID",(id + i)).get();
             DBCursor cursor = adminDbCollection.find(query1);
             while (cursor.hasNext()) {
                 dbObjects.add(cursor.next());
