@@ -79,18 +79,17 @@ public class MainStageController {
             //TODO ERROR CHECKING
             employee = adminMap.get(Integer.parseInt(usernameTextField.getText()));
 
-//            currentSession.setLoggedIn(employee);
-            System.out.println(employee);
             if (employee != null) {
                 if (passwordTextField.getText().equals(employee.getPassword())) {
 
-//                    currentSession.setAdmin(true);
-//                    currentSession.setLoggedIn(employee);
+                    currentSession.setAdmin(true);
+                    currentSession.setLoggedIn(employee);
 
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../AdministrativeScene.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Administrative.fxml"));
                     //TODO ISSUE FOUND
+                    System.out.println(loader.getLocation());
                     BorderPane root = loader.load();
-
+                    System.out.println("can y ousee mee");
                     AdministrativeController adminController = loader.getController();
                     Scene administrativeScene = new Scene(root, 600, 600);
 

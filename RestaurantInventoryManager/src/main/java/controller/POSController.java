@@ -213,7 +213,7 @@ public class POSController {
 //            mealTable.setItems(fillMealCollection());
 
             admin.setOnAction(event -> {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("../AdministrativeScene.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../AdministrativeView.fxml"));
                 BorderPane root = null;
                 try {
                     root = loader.load();

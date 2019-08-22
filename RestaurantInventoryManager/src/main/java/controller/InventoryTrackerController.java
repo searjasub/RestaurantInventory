@@ -212,7 +212,7 @@ public class InventoryTrackerController {
         });
 
         admin.setOnAction(event -> {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../AdministrativeScene.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AdministrativeView.fxml"));
             BorderPane root = null;
             try {
                 root = loader.load();
@@ -221,7 +221,7 @@ public class InventoryTrackerController {
             }
 
             AdministrativeController adminController = loader.getController();
-            inventory.setSelected(true);
+            admin.setSelected(true);
             adminController.setPrimaryStage(primaryStage, inventoryScene, mainController, employeesCollection, currentSession);
             primaryStage.setMaxWidth(600);
             primaryStage.setMaxHeight(600);

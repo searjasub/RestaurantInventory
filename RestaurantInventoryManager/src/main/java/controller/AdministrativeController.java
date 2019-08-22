@@ -54,6 +54,9 @@ public class AdministrativeController {
         this.employeeHashMap = employeesCollection;
         this.currentSession = currentSession;
         primaryStage.setTitle("Restaurant Inventory Manager - Administrator");
+        System.out.println(currentSession.isAdmin());
+        System.out.println(currentSession.getLoggedIn().getId());
+        System.out.println(currentSession.getLoggedIn().getName());
 
 
         if (data.size() > 100) {
@@ -122,14 +125,25 @@ public class AdministrativeController {
             grid.add(password, 1, 2);
             grid.add(new Label("HourlyPay"), 0, 3);
             grid.add(hourlyPay, 1, 3);
-            grid.add(new Label("Occupation:"), 0, 4);
+            grid.add(new Label("Primary Email:"), 0, 4);
             grid.add(occupation, 1, 4);
 
-            //TODO Check for empty response
             Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
             loginButton.setDisable(true);
 
+
             name.textProperty().addListener((observable, oldValue, newValue) -> loginButton.setDisable(newValue.trim().isEmpty()));
+
+            weeklyHours.textProperty().addListener((observable, oldValue, newValue) -> loginButton.setDisable(newValue.trim().isEmpty()));
+
+            password.textProperty().addListener((observable, oldValue, newValue) -> loginButton.setDisable(newValue.trim().isEmpty()));
+
+            hourlyPay.textProperty().addListener((observable, oldValue, newValue) -> loginButton.setDisable(newValue.trim().isEmpty()));
+
+            occupation.textProperty().addListener((observable, oldValue, newValue) -> loginButton.setDisable(newValue.trim().isEmpty()));
+
+
+
 
             dialog.getDialogPane().setContent(grid);
 
@@ -140,7 +154,7 @@ public class AdministrativeController {
                     Employee e = new Employee();
 
                     e.setName(name.getText().trim());
-                    e.setId("" + (collection.countDocuments() + 100001));
+                    e.setId("" + (collection.countDocuments() + 1));
                     e.setWeeklyHours(weeklyHours.getText().trim());
                     e.setPassword(password.getText().trim());
                     e.setHourlyPay(hourlyPay.getText().trim());
@@ -154,8 +168,6 @@ public class AdministrativeController {
             Optional<Employee> result = dialog.showAndWait();
 
             result.ifPresent(this::AddEmployee);
-
-            empsTable.refresh();
         });
 
         //TODO DELETE EMPLOYEE
@@ -241,7 +253,8 @@ public class AdministrativeController {
                             "WeeklyHours",
                             "Password",
                             "HourlyPay",
-                            "Occupation"
+                            "Occupation",
+                            "EmployeeID"
                     );
             final ComboBox comboBox = new ComboBox(options);
 
@@ -271,6 +284,10 @@ public class AdministrativeController {
                     grid.add(new Label("Occupation"), 0, 1);
                     grid.add(occupation, 1, 1);
                 }
+                if (newValue.equals("employeeID")) {
+                    grid.add(new Label("employeeID"), 0, 1);
+                    grid.add(occupation, 1, 1);
+                }
             });
 
 
@@ -295,22 +312,24 @@ public class AdministrativeController {
                     e.setHourlyPay(hourlyPay.getText().trim());
                     e.setOccupation(occupation.getText().trim());
 
-                    if (!name.equals(null)) {
+                    if(!name.equals(null)){
                         updateEmployee(ids, "name", e.getName());
                     }
-                    if (!password.equals(null)) {
+                    if(!password.equals(null)){
                         updateEmployee(ids, "password", e.getPassword());
                     }
-                    if (!weeklyHours.equals(null)) {
+                    if(!weeklyHours.equals(null)){
                         updateEmployee(ids, "weeklyHours", e.getWeeklyHours());
                     }
-                    if (!hourlyPay.equals(null)) {
+                    if(!hourlyPay.equals(null)){
                         updateEmployee(ids, "hourlyPay", e.getHourlyPay());
                     }
-                    if (!occupation.equals(null)) {
+                    if(!occupation.equals(null)){
                         updateEmployee(ids, "occupation", e.getOccupation());
                     }
-
+                    if(!id.equals(null)){
+                        updateEmployee(ids, "employeeID", e.getId());
+                    }
 
                     return e;
                 }
@@ -319,7 +338,7 @@ public class AdministrativeController {
 
             Optional<Employee> result = dialog.showAndWait();
 
-
+            //TODO what's next?
             if (result.isPresent()) {
                 //deleteEmployee(result.get());
             }
@@ -328,27 +347,23 @@ public class AdministrativeController {
         menuBar.getMenus().add(viewMenu);
         menuBar.getMenus().add(employeesMenu);
 
-        ToggleGroup radioToggleGroup = new ToggleGroup();
-        radioToggleGroup.getToggles().add(radioAll);
-        radioToggleGroup.getToggles().add(radioClockedIn);
-        radioAll.setSelected(true);
 
         inventory.setOnAction(event -> {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../InventoryTrackerScene.fxml"));
             BorderPane root;
-            Scene administrativeScene = null;
+            Scene inventoryScene = null;
             try {
                 root = loader.load();
-                administrativeScene = new Scene(root, 600, 600);
+                inventoryScene = new Scene(root, 600, 600);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             InventoryTrackerController inventoryController = loader.getController();
 
-            inventoryController.setPrimaryScene(primaryStage, administrativeScene, mainStageController, employeesCollection, currentSession);
+            inventoryController.setPrimaryScene(primaryStage, inventoryScene, mainStageController, employeesCollection, currentSession);
             primaryStage.setMaxWidth(600);
             primaryStage.setMaxHeight(600);
-            primaryStage.setScene(administrativeScene);
+            primaryStage.setScene(inventoryScene);
         });
 
         finance.setOnAction(event -> {
@@ -437,15 +452,15 @@ public class AdministrativeController {
     private Node createPage(Integer pageIndex) {
         int rowsPerPage = 10;
         int fromIndex = pageIndex * rowsPerPage;
-        int toIndex = Math.min(fromIndex + rowsPerPage, (int) collection.countDocuments());
+        int toIndex = Math.min(fromIndex + rowsPerPage, (int) collection.countDocuments()-1);
 
         empsTable.getItems().setAll(FXCollections.observableArrayList(data.subList(fromIndex, toIndex)));
         return empsTable;
     }
 
     private void AddEmployee(Employee e) {
-        collection.insertOne(new Document("name", e.getName()).append("employeeID", Integer.parseInt(e.getId())).append("password", e.getPassword())
-                .append("hourlyPay", Integer.parseInt(e.getHourlyPay())).append("occupation", e.getOccupation()).append("weeklyHours", Integer.parseInt(e.getWeeklyHours())));
+        collection.insertOne(new Document("name", e.getName()).append("weeklyHours", Integer.parseInt(e.getWeeklyHours())).append("employeeID", Integer.parseInt(e.getId())).append("password", e.getPassword())
+                .append("hourlyPay", Integer.parseInt(e.getHourlyPay())).append("occupation", e.getOccupation()));
     }
 
     private void deleteEmployee(int e) {
@@ -489,21 +504,18 @@ public class AdministrativeController {
         List<DBObject> dbObjects = new ArrayList<>();
 
         int id = 100001;
-        int counter = 1;
         for (int i = 0; i < collection.countDocuments(); i++) {
             DBObject query = BasicDBObjectBuilder.start().add("employeeID", id + i).get();
-
-            while (dbCollection.findOne(query) != null) {
-                query = BasicDBObjectBuilder.start().add("employeeID", id + i + 1).get();
-            }
             DBCursor cursor = dbCollection.find(query);
             while (cursor.hasNext()) {
                 dbObjects.add(cursor.next());
             }
         }
 
+        System.out.println(dbObjects);
+
         Employee employee;
-        for (int i = 0; i < dbObjects.size(); i++) {
+        for (int i = 0; i < collection.countDocuments(); i++) {
             employee = new Employee();
             employee.setName(dbObjects.get(i).get("name").toString());
             employee.setPassword(dbObjects.get(i).get("password").toString());
